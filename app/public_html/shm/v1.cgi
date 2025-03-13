@@ -569,6 +569,59 @@ my $routes = {
 
     },
 },
+'/admin/tickets' => {
+    GET => {
+        controller => 'Tickets',
+    },
+    PUT => {
+        controller => 'Tickets',
+        method => 'create',
+    },
+    POST => {
+        controller => 'Tickets',
+        method => 'reply',
+    },
+},
+'/admin/tickets/close' => {
+    POST => {
+        controller => 'Tickets',
+        method => 'close',
+        required => ['id','user_id'],
+    },
+},
+'/admin/tickets/:id' => {
+    GET => {
+        controller => 'Tickets',
+        method => 'list',
+        required => ['id'],
+    },
+    DELETE => {
+        controller => 'Tickets',
+        method => 'delete',
+        required => ['id'],
+    },
+},
+'/tickets' => {
+    GET => {
+        controller => 'Tickets',
+        method => 'list',
+    },
+    PUT => {
+        controller => 'Tickets',
+        method => 'create',
+    },
+    POST => {
+        controller => 'Tickets',
+        method => 'reply',
+    },
+},
+'/tickets/close' => {
+    POST => {
+        controller => 'Tickets',
+        method => 'close',
+        required => ['id','user_id'],
+    },
+},
 '/telegram/bot' => {
     POST => {
         skip_check_auth => 1,

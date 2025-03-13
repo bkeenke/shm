@@ -77,6 +77,7 @@ sub parse {
         spool => sub { get_service('Spool') },
         spool_history => sub { get_service('SpoolHistory') },
         promo => sub { get_service('promo') },
+        tickets => sub { get_service('tickets') },
         $args{event_name} ? ( event_name => uc $args{event_name} ) : (),
         %{ $args{vars} }, # do not move it upper. It allows to override promo end others
         request => sub {
