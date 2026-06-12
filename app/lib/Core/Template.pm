@@ -436,7 +436,21 @@ sub _list {
             }
         }
     }
+
+    $self->{_file_total} = scalar @data;
+
+    if ( defined $args{limit} && $args{limit} > 0 ) {
+        my $offset = $args{offset} || 0;
+        @data = splice( @data, $offset, $args{limit} );
+    }
+
     return wantarray ? @data : \@data;
+}
+
+sub found_rows {
+    my $self = shift;
+    return $self->{_file_total} if $self->{file_mode} && defined $self->{_file_total};
+    return $self->SUPER::found_rows( @_ );
 }
 
 sub _db_add {
