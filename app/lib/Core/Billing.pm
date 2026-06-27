@@ -563,9 +563,16 @@ sub money_back {
             $wd{bonus} = $used_bonus;
             $delta_bonus = $paid_bonus - $used_bonus;
         } else {
-            $delta_bonus = $calc->{total} > $wd{bonus} ? $wd{bonus} : $calc->{total};
-            $wd{bonus} -= $delta_bonus;
-            $wd{bonus} = 0 if $wd{bonus} < 0;
+            # Бонусы в приоритете: сохраняем столько бонусов, чтобы покрыть стоимость использованного периода, остаток — деньгами.
+            # delta_bonus = излишек бонусов сверх стоимости использованного периода.
+            my $bonus_to_keep = $paid_bonus < $calc->{total} ? $paid_bonus : $calc->{total};
+            my $cash_to_keep  = $calc->{total} - $bonus_to_keep;
+
+            $delta_money = $paid_money - $cash_to_keep;
+            $delta_bonus = $paid_bonus - $bonus_to_keep;
+
+            $wd{total} = $cash_to_keep;
+            $wd{bonus} = $bonus_to_keep;
         }
     } else {
         $delta_money = $wd{total} - $calc->{total};
@@ -649,14 +656,15 @@ sub apply_partial_period {
 # | < 100               | <= 0   | 0  (no base for percentage)  |
 # | < 100               | > 0    | $total * percent / 100       |
 sub calc_available_bonuses {
-    my $service = shift;
+    my $obj = shift;
     my $bonus = shift;
     my $total = shift;
 
-    return 0 unless ref $service;
+    return 0 unless ref $obj;
     return 0 if $bonus <= 0;
 
-    my $limit_bonus_percent = $service->config->{limit_bonus_percent};
+    my $config = $obj->can('service') ? $obj->service->config : $obj->config;
+    my $limit_bonus_percent = $config->{limit_bonus_percent};
 
     # Without a limit (or with a full 100% limit), bonuses are available regardless of total.
     return $bonus unless length $limit_bonus_percent;
